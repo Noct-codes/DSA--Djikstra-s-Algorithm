@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijkstra's Algorithm Visualization</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .active-mode {
+            background: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+        
+        .status {
+            padding: 15px;
+            background: #e8f4fc;
+            border-radius: 5px;
+            border-left: 5px solid #3498db;
+            font-family: monospace;
+            min-height: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .step-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .canvas-container {
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            display: block;
+            background: white;
+        }
+        
+        .instructions {
+            line-height: 1.6;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .complexity {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .weight-display {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dijkstra's Algorithm Visualization</h1>
+            <p class="subtitle">Build your graph and visualize the shortest path algorithm</p>
+        </header>
+        
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel">
+                    <h2>Controls</h2>
+                    <div class="controls">
+                        <button id="add-node-btn" class="active-mode">Add Node</button>
+                        <button id="add-edge-btn">Add Edge</button>
+                        <button id="set-start-btn">Set Start</button>
+                        <button id="set-end-btn">Set End</button>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="edge-weight">Edge Weight:</label>
+                        <input type="range" id="edge-weight" min="1" max="20" value="5">
+                        <div class="weight-display">Value: <span id="weight-value">5</span></div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="run-algorithm-btn">Run Algorithm</button>
+                        <button id="reset-btn">Reset Graph</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>Algorithm Status</h2>
+                    <div id="status" class="status">Ready to build your graph. Click to add nodes.</div>
+                    
+                    <div class="step-controls">
+                        <button id="step-btn" disabled>Step</button>
+                        <button id="run-step-btn" disabled>Run Steps</button>
+                        <button id="reset-algo-btn" disabled>Reset Algorithm</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>Legend</h2>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #e74c3c;"></div>
+                            <span>Start Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #2ecc71;"></div>
+                            <span>End Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #3498db;"></div>
+                            <span>Visited Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #9b59b6;"></div>
+                            <span>Shortest Path</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="panel">
+                    <h2>Graph Canvas</h2>
+                    <div class="canvas-container">
+                        <canvas id="graph-canvas" width="700" height="500"></canvas>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>How to Use</h2>
+                    <div class="instructions">
+                        <ol>
+                            <li>Click <strong>Add Node</strong> and click on the canvas to place nodes</li>
+                            <li>Click <strong>Add Edge</strong> and select two nodes to connect them</li>
+                            <li>Set the <strong>Start Node</strong> and <strong>End Node</strong></li>
+                            <li>Adjust edge weight with the slider if needed</li>
+                            <li>Click <strong>Run Algorithm</strong> to find the shortest path</li>
+                            <li>Use <strong>Step</strong> to see the algorithm progress step-by-step</li>
+                        </ol>
+                        <p><strong>Tip:</strong> You can drag nodes to rearrange the graph</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Graph and algorithm state
+        const graph = {
+            nodes: [],
+            edges: [],
+            startNode: null,
+            endNode: null
+        };
+
+        // Algorithm state
+        let algorithm = {
+            running: false,
+            stepIndex: 0,
+            distances: {},
+            previous: {},
+            visited: new Set(),
+            unvisited: new Set(),
+            current: null,
+            steps: []
+        };
+
+        // DOM elements
+        const canvas = document.getElementById('graph-canvas');
+        const ctx = canvas.getContext('2d');
+        const statusElement = document.getElementById('status');
+        const addNodeBtn = document.getElementById('add-node-btn');
+        const addEdgeBtn = document.getElementById('add-edge-btn');
+        const setStartBtn = document.getElementById('set-start-btn');
+        const setEndBtn = document.getElementById('set-end-btn');
+        const runAlgorithmBtn = document.getElementById('run-algorithm-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const stepBtn = document.getElementById('step-btn');
+        const runStepBtn = document.getElementById('run-step-btn');
+        const resetAlgoBtn = document.getElementById('reset-algo-btn');
+        const edgeWeightInput = document.getElementById('edge-weight');
+        const weightValue = document.getElementById('weight-value');
+
+        // Interaction state
+        let interactionMode = 'add-node';
+        let selectedNode = null;
+        let draggingNode = null;
+
+        // Update weight display
+        edgeWeightInput.addEventListener('input', () => {
+            weightValue.textContent = edgeWeightInput.value;
+        });
+
+        // Initialize
+        function init() {
+            // Set up event listeners
+            addNodeBtn.addEventListener('click', () => {
+                setInteractionMode('add-node');
+                updateStatus('Click on the canvas to add a node');
+            });
+
+            addEdgeBtn.addEventListener('click', () => {
+                setInteractionMode('add-edge');
+                selectedNode = null;
+                updateStatus('Select first node to create an edge');
+            });
+
+            setStartBtn.addEventListener('click', () => {
+                setInteractionMode('set-start');
+                updateStatus('Select a node to set as start');
+            });
+
+            setEndBtn.addEventListener('click', () => {
+                setInteractionMode('set-end');
+                updateStatus('Select a node to set as end');
+            });
+
+            runAlgorithmBtn.addEventListener('click', runAlgorithm);
+            resetBtn.addEventListener('click', resetGraph);
+            stepBtn.addEventListener('click', performStep);
+            runStepBtn.addEventListener('click', runSteps);
+            resetAlgoBtn.addEventListener('click', resetAlgorithm);
+
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+
+            // Initial render
+            render();
+        }
+
+        function setInteractionMode(mode) {
+            interactionMode = mode;
+            // Update button styles
+            [addNodeBtn, addEdgeBtn, setStartBtn, setEndBtn].forEach(btn => {
+                btn.classList.remove('active-mode');
+            });
+            document.getElementById(`${mode}-btn`).classList.add('active-mode');
+        }
+
+        // Handle canvas clicks based on interaction mode
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            switch (interactionMode) {
+                case 'add-node':
+                    addNode(x, y);
+                    break;
+                case 'add-edge':
+                    selectNodeForEdge(x, y);
+                    break;
+                case 'set-start':
+                    setStartNode(x, y);
+                    break;
+                case 'set-end':
+                    setEndNode(x, y);
+                    break;
+            }
+
+            render();
+        }
+
+        // Handle mouse interactions for dragging nodes
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Check if clicking on a node
+            for (const node of graph.nodes) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= node.radius) {
+                    draggingNode = node;
+                    break;
+                }
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!draggingNode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            draggingNode.x = e.clientX - rect.left;
+            draggingNode.y = e.clientY - rect.top;
+            
+            render();
+        }
+
+        function handleMouseUp() {
+            draggingNode = null;
+        }
+
+        // Graph manipulation functions
+        function addNode(x, y) {
+            const id = String.fromCharCode(65 + graph.nodes.length); // A, B, C, ...
+            graph.nodes.push({ id, x, y, radius: 20 });
+            updateStatus(`Added node ${id}. Now add edges between nodes.`);
+        }
+
+        function selectNodeForEdge(x, y) {
+            for (const node of graph.nodes) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= node.radius) {
+                    if (!selectedNode) {
+                        selectedNode = node;
+                        updateStatus(`Selected node ${node.id}. Now select another node to create an edge.`);
+                    } else if (selectedNode !== node) {
+                        // Don't allow duplicate edges
+                        const weight = parseInt(edgeWeightInput.value) || 1;
+                        addEdge(selectedNode, node, weight);
+                        selectedNode = null;
+                        setInteractionMode(null);
+                        updateStatus(`Added edge between ${selectedNode.id} and ${node.id} with weight ${weight}`);
+                    }
+                    return;
+                }
+            }
+        }
+
+        function addEdge(node1, node2, weight) {
+            // Check if edge already exists
+            for (const edge of graph.edges) {
+                if ((edge.from === node1 && edge.to === node2) || 
+                    (edge.from === node2 && edge.to === node1)) {
+                    updateStatus('Edge already exists between these nodes');
+                    return; // Edge already exists
+                }
+            }
+            
+            graph.edges.push({ from: node1, to: node2, weight });
+        }
+
+        function setStartNode(x, y) {
+            for (const node of graph.nodes) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= node.radius) {
+                    graph.startNode = node;
+                    updateStatus(`Set node ${node.id} as start node`);
+                    setInteractionMode(null);
+                    return;
+                }
+            }
+        }
+
+        function setEndNode(x, y) {
+            for (const node of graph.nodes) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= node.radius) {
+                    graph.endNode = node;
+                    updateStatus(`Set node ${node.id} as end node`);
+                    setInteractionMode(null);
+                    return;
+                }
+            }
+        }
+
+        // Algorithm functions
+        function runAlgorithm() {
+            if (!graph.startNode || !graph.endNode) {
+                updateStatus('Please set both start and end nodes before running the algorithm');
+                return;
+            }
+
+            if (graph.nodes.length < 2) {
+                updateStatus('Need at least 2 nodes to run the algorithm');
+                return;
+            }
+
+            if (graph.edges.length === 0) {
+                updateStatus('Need at least one edge to run the algorithm');
+                return;
+            }
+
+            // Initialize algorithm state
+            algorithm.running = true;
+            algorithm.distances = {};
+            algorithm.previous = {};
+            algorithm.visited = new Set();
+            algorithm.unvisited = new Set(graph.nodes.map(node => node.id));
+            algorithm.steps = [];
+            algorithm.stepIndex = 0;
+
+            // Set all distances to Infinity except start node
+            for (const node of graph.nodes) {
+                algorithm.distances[node.id] = node === graph.startNode ? 0 : Infinity;
+                algorithm.previous[node.id] = null;
+            }
+
+            algorithm.current = graph.startNode.id;
+            algorithm.unvisited.delete(algorithm.current);
+
+            // Generate algorithm steps
+            generateAlgorithmSteps();
+
+            // Enable algorithm controls
+            stepBtn.disabled = false;
+            runStepBtn.disabled = false;
+            resetAlgoBtn.disabled = false;
+            runAlgorithmBtn.disabled = true;
+
+            updateStatus('Algorithm initialized. Click "Step" to proceed or "Run Steps" to animate.');
+            render();
+        }
+
+        function generateAlgorithmSteps() {
+            // Create a copy of the algorithm state for stepping
+            const distances = {...algorithm.distances};
+            const previous = {...algorithm.previous};
+            const unvisited = new Set(algorithm.unvisited);
+            const visited = new Set(algorithm.visited);
+            let current = algorithm.current;
+
+            while (unvisited.size > 0) {
+                // Add step: current node being processed
+                algorithm.steps.push({
+                    type: 'process',
+                    node: current,
+                    distances: {...distances},
+                    previous: {...previous},
+                    visited: new Set(visited),
+                    unvisited: new Set(unvisited)
+                });
+
+                // Get all neighbors of current node
+                const neighbors = getNeighbors(current);
+                
+                // Update distances to neighbors
+                for (const neighbor of neighbors) {
+                    if (visited.has(neighbor.id)) continue;
+                    
+                    const edge = findEdge(current, neighbor.id);
+                    const newDistance = distances[current] + edge.weight;
+                    
+                    if (newDistance < distances[neighbor.id]) {
+                        distances[neighbor.id] = newDistance;
+                        previous[neighbor.id] = current;
+                        
+                        // Add step: distance updated
+                        algorithm.steps.push({
+                            type: 'update',
+                            node: neighbor.id,
+                            distance: newDistance,
+                            from: current,
+                            distances: {...distances},
+                            previous: {...previous},
+                            visited: new Set(visited),
+                            unvisited: new Set(unvisited)
+                        });
+                    }
+                }
+                
+                // Mark current as visited
+                visited.add(current);
+                unvisited.delete(current);
+                
+                // Add step: node visited
+                algorithm.steps.push({
+                    type: 'visited',
+                    node: current,
+                    distances: {...distances},
+                    previous: {...previous},
+                    visited: new Set(visited),
+                    unvisited: new Set(unvisited)
+                });
+                
+                // If we've reached the end node, we can stop early
+                if (current === graph.endNode.id) {
+                    break;
+                }
+                
+                // Find the next unvisited node with the smallest distance
+                let nextNode = null;
+                let smallestDistance = Infinity;
+                
+                for (const nodeId of unvisited) {
+                    if (distances[nodeId] < smallestDistance) {
+                        smallestDistance = distances[nodeId];
+                        nextNode = nodeId;
+                    }
+                }
+                
+                if (!nextNode) break; // No more reachable nodes
+                current = nextNode;
+            }
+            
+            // Add final step: algorithm complete
+            algorithm.steps.push({
+                type: 'complete',
+                path: reconstructPath(previous),
+                distance: distances[graph.endNode.id],
+                distances: {...distances},
+                previous: {...previous},
+                visited: new Set(visited),
+                unvisited: new Set(unvisited)
+            });
+        }
+
+        function getNeighbors(nodeId) {
+            const neighbors = [];
+            for (const edge of graph.edges) {
+                if (edge.from.id === nodeId) {
+                    neighbors.push(edge.to);
+                } else if (edge.to.id === nodeId) {
+                    neighbors.push(edge.from);
+                }
+            }
+            return neighbors;
+        }
+
+        function findEdge(nodeId1, nodeId2) {
+            for (const edge of graph.edges) {
+                if ((edge.from.id === nodeId1 && edge.to.id === nodeId2) || 
+                    (edge.from.id === nodeId2 && edge.to.id === nodeId1)) {
+                    return edge;
+                }
+            }
+            return null;
+        }
+
+        function reconstructPath(previous) {
+            const path = [];
+            let current = graph.endNode.id;
+            
+            while (current !== null) {
+                path.unshift(current);
+                current = previous[current];
+            }
+            
+            // Check if path is valid
+            if (path.length === 1 && path[0] === graph.endNode.id) {
+                return []; // No path found
+            }
+            
+            return path;
+        }
+
+        function performStep() {
+            if (algorithm.stepIndex >= algorithm.steps.length) {
+                updateStatus('Algorithm completed');
+                return;
+            }
+            
+            const step = algorithm.steps[algorithm.stepIndex];
+            algorithm.stepIndex++;
+            
+            // Update algorithm state based on step
+            algorithm.distances = step.distances;
+            algorithm.previous = step.previous;
+            algorithm.visited = step.visited;
+            algorithm.unvisited = step.unvisited;
+            
+            // Update status based on step type
+            switch (step.type) {
+                case 'process':
+                    updateStatus(`Processing node ${step.node} with current distance ${step.distances[step.node]}`);
+                    break;
+                case 'update':
+                    updateStatus(`Updating distance to node ${step.node} to ${step.distance} via node ${step.from}`);
+                    break;
+                case 'visited':
+                    updateStatus(`Marked node ${step.node} as visited`);
+                    break;
+                case 'complete':
+                    if (step.path.length > 0) {
+                        updateStatus(`Algorithm complete! Shortest path: ${step.path.join(' → ')} with total distance ${step.distance}`);
+                    } else {
+                        updateStatus('Algorithm complete! No path found from start to end node.');
+                    }
+                    stepBtn.disabled = true;
+                    runStepBtn.disabled = true;
+                    break;
+            }
+            
+            render();
+        }
+
+        function runSteps() {
+            stepBtn.disabled = true;
+            runStepBtn.disabled = true;
+            
+            const interval = setInterval(() => {
+                if (algorithm.stepIndex >= algorithm.steps.length) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                performStep();
+                
+                if (algorithm.stepIndex >= algorithm.steps.length) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        function resetAlgorithm() {
+            algorithm.running = false;
+            algorithm.stepIndex = 0;
+            algorithm.distances = {};
+            algorithm.previous = {};
+            algorithm.visited = new Set();
+            algorithm.unvisited = new Set();
+            algorithm.current = null;
+            algorithm.steps = [];
+            
+            stepBtn.disabled = true;
+            runStepBtn.disabled = true;
+            resetAlgoBtn.disabled = true;
+            runAlgorithmBtn.disabled = false;
+            
+            updateStatus('Algorithm reset. You can run it again.');
+            render();
+        }
+
+        function resetGraph() {
+            graph.nodes = [];
+            graph.edges = [];
+            graph.startNode = null;
+            graph.endNode = null;
+            
+            resetAlgorithm();
+            updateStatus('Graph reset. Click to add nodes.');
+        }
+
+        // Rendering functions
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw edges
+            for (const edge of graph.edges) {
+                drawEdge(edge);
+            }
+            
+            // Draw nodes
+            for (const node of graph.nodes) {
+                drawNode(node);
+            }
+        }
+
+        function drawNode(node) {
+            // Determine node color based on state
+            let color = '#34495e'; // Default
+            
+            if (node === graph.startNode) {
+                color = '#e74c3c'; // Start node
+            } else if (node === graph.endNode) {
+                color = '#2ecc71'; // End node
+            } else if (algorithm.visited.has(node.id)) {
+                color = '#3498db'; // Visited
+            }
+            
+            // Check if node is in the shortest path
+            if (algorithm.steps.length > 0) {
+                const lastStep = algorithm.steps[algorithm.steps.length - 1];
+                if (lastStep.type === 'complete' && lastStep.path.includes(node.id)) {
+                    color = '#9b59b6'; // Path
+                }
+            }
+            
+            // Draw node circle
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw node label
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.id, node.x, node.y);
+        }
+
+        function drawEdge(edge) {
+            const from = edge.from;
+            const to = edge.to;
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(from.x, from.y);
+            ctx.lineTo(to.x, to.y);
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw weight
+            const midX = (from.x + to.x) / 2;
+            const midY = (from.y + to.y) / 2;
+            
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#34495e';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(midX, midY, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.font = 'bold 12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(edge.weight.toString(), midX, midY);
+        }
+
+        function updateStatus(message) {
+            statusElement.textContent = message;
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
