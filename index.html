@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dijkstra's Algorithm Visualization</title>
+    <title>Dijkstra's Algorithm Visualization - Dark Theme</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,8 +13,8 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: #333;
+            background: linear-gradient(135deg, #0a0a1a, #1a001a, #001a1a);
+            color: #e0e0e0;
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -25,27 +25,30 @@
         .container {
             max-width: 1200px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(20, 20, 30, 0.95);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
         
         header {
-            background: #2c3e50;
-            color: white;
+            background: #121212;
+            color: #e0e0e0;
             padding: 20px;
             text-align: center;
+            border-bottom: 1px solid #333;
         }
         
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
+            color: #8c7ae6;
         }
         
         .subtitle {
             font-style: italic;
             opacity: 0.8;
+            color: #a0a0b0;
         }
         
         .content {
@@ -66,18 +69,19 @@
         }
         
         .panel {
-            background: white;
+            background: #1e1e2e;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             margin-bottom: 20px;
+            border: 1px solid #333;
         }
         
         h2 {
-            color: #2c3e50;
+            color: #8c7ae6;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #333;
         }
         
         .controls {
@@ -91,18 +95,18 @@
             padding: 12px;
             border: none;
             border-radius: 5px;
-            background: #3498db;
+            background: #4834d4;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         
         button:hover {
-            background: #2980b9;
+            background: #686de0;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
         
         button:active {
@@ -110,7 +114,8 @@
         }
         
         button:disabled {
-            background: #95a5a6;
+            background: #353b48;
+            color: #777;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -129,13 +134,20 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #a0a0b0;
         }
         
         input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #333;
             border-radius: 5px;
+            background: #2d2d3e;
+            color: #e0e0e0;
+        }
+        
+        input[type="range"] {
+            accent-color: #4834d4;
         }
         
         .legend {
@@ -155,17 +167,18 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            border: 2px solid #333;
+            border: 2px solid #444;
         }
         
         .status {
             padding: 15px;
-            background: #e8f4fc;
+            background: #2d2d3e;
             border-radius: 5px;
-            border-left: 5px solid #3498db;
+            border-left: 5px solid #4834d4;
             font-family: monospace;
             min-height: 20px;
             margin-bottom: 15px;
+            color: #e0e0e0;
         }
         
         .step-controls {
@@ -175,20 +188,22 @@
         }
         
         .canvas-container {
-            background: #ecf0f1;
+            background: #2d2d3e;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             margin-bottom: 20px;
+            border: 1px solid #333;
         }
         
         canvas {
             display: block;
-            background: white;
+            background: #121212;
         }
         
         .instructions {
             line-height: 1.6;
+            color: #a0a0b0;
         }
         
         .instructions ol {
@@ -202,15 +217,17 @@
         
         .complexity {
             padding: 15px;
-            background: #f8f9fa;
+            background: #2d2d3e;
             border-radius: 5px;
             font-size: 0.9rem;
+            color: #a0a0b0;
         }
         
         .weight-display {
             text-align: center;
             font-weight: bold;
             margin-top: 5px;
+            color: #a0a0b0;
         }
     </style>
 </head>
@@ -865,7 +882,7 @@
             const midX = (from.x + to.x) / 2;
             const midY = (from.y + to.y) / 2;
             
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = '#2d2d3e';
             ctx.strokeStyle = '#34495e';
             ctx.lineWidth = 4;
             ctx.beginPath();
@@ -874,7 +891,7 @@
             ctx.stroke();
             
             ctx.font = 'bold 12px Arial';
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = '#e0e0e0';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(edge.weight.toString(), midX, midY);
